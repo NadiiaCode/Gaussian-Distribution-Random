@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gaussian Distribution Random</title>
+  </head>
+  <body>
+    <canvas id="cnvs"></canvas>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      canvas {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+
+    <script>
+      var array, cnvs, context, w, h, width, height;
+
+      function setup() {
+        cnvs = document.querySelector("#cnvs");
+        context = cnvs.getContext("2d");
+        cnvs.width = w = width = innerWidth;
+        cnvs.height = h = height = innerHeight;
+        array = new Array(parseInt(width / 2)).fill(0);
+        background("#2b041b");
+        requestAnimationFrame(draw);
+      }
+
+      function draw() {
+        for (let i = 0; i < 10; i++) {
+          let v = parseInt(gaussianDistributionRandom(width / 6, width / 6));
+          array[v]++;
+          for (let i = 0; i < array.length; i++) {
+            context.strokeStyle = `rgba(${array[i]},${255 - array[i]},${255})`;
+            line(i * 3, height - array[i], i * 3, height);
+          }
+        }
+        requestAnimationFrame(draw);
+      }
+
+      const random = (min = 0, max = 1) => {
+        return Math.random() * (max - min) + min;
+      };
+
+      function gaussianDistributionRandom(mean = 0, std = 1) {
+        let random1;
+        let random2;
+        let probability;
+        do {
+          random1 = random(-1, 1);
+          random2 = random();
+          probability = Math.exp(-1 * Math.pow(2 * random1, 2));
+        } while (random2 > probability);
+        return random1 * std + mean;
+      }
+
+      const background = (col) => {
+        context.fillStyle = col;
+        context.fillRect(0, 0, w, h);
+      };
+
+      const line = (x1, y1, x2, y2) => {
+        context.beginPath();
+        context.moveTo(x1, y1);
+        context.lineTo(x2, y2);
+        context.stroke();
+      };
+
+      window.onload = setup;
+    </script>
+  </body>
+</html>
